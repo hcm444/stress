@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import math
 pygame.init()
 frame_rate = 60
 font = pygame.font.Font(None, 36)
@@ -26,8 +26,8 @@ class Ball:
     def __init__(self):
         self.x = random.uniform(0, screen_width)
         self.y = random.uniform(0, screen_height)
-        self.vx = random.uniform(-1, 4)
-        self.vy = random.uniform(-1, 4)
+        self.vx = random.uniform(-4, 4)
+        self.vy = random.uniform(-4, 4)
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.radius = random.randint(2, 4)
 
@@ -35,10 +35,23 @@ class Ball:
         self.vy += gravity
         self.x += self.vx
         self.y += self.vy
-        if self.x - self.radius < 0 or self.x + self.radius > screen_width:
+        if self.x - self.radius <= 0 or self.x + self.radius >= screen_width:
             self.vx = -self.vx
-        if self.y - self.radius < 0 or self.y + self.radius > screen_height:
+        if self.y - self.radius <= 0 or self.y + self.radius >= screen_height:
             self.vy = -self.vy
+
+    def check_collision(self, other_ball):
+            dx = self.x - other_ball.x
+            dy = self.y - other_ball.y
+            distance = math.sqrt(dx ** 2 + dy ** 2)
+
+            if distance < self.radius + other_ball.radius:
+                new_self_vx = (self.vx * (self.radius - other_ball.radius) +
+                               2 * other_ball.radius * other_ball.vx) / (self.radius + other_ball.radius)
+                new_other_vx = (other_ball.vx * (other_ball.radius - self.radius) +
+                                2 * self.radius * self.vx) / (self.radius + other_ball.radius)
+                self.vx = new_self_vx
+                other_ball.vx = new_other_vx
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
@@ -61,16 +74,19 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                for i in range(0, 100):
+                for i in range(0, 10):
                     add_ball()
             elif event.key == pygame.K_BACKSPACE:
-                for i in range(0, 100):
+                for i in range(0, 10):
                     remove_ball()
     for ball in balls:
         ball.update()
     screen.fill((0, 0, 0))
     for ball in balls:
         ball.draw()
+    for i in range(len(balls)):
+        for j in range(i + 1, len(balls)):
+            balls[i].check_collision(balls[j])
     fps = clock.get_fps()
     if pygame.time.get_ticks() / 1000 > num_frames_for_fps:
         fps_counter = 0
