@@ -2,6 +2,6 @@
 
 
 # SPACE
-Add 100 bouncy balls
+Add 10 bouncy balls
 # BACKSPACE
-Delete 100 bouncy balls
+Delete 10 bouncy balls
