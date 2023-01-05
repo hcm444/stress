@@ -11,6 +11,17 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Stress Test')
 gravity = 0.1
 balls = []
+window_size = (screen_width, screen_height)
+font = pygame.font.Font(None, 30)
+num_frames_for_fps = 60
+fps = 0
+fps_counter = 0
+max_fps = 60
+graph_size = (100, 100)
+graph_pos = (10, 60)
+graph_color = (255, 0, 255)
+fps_text_color = (255, 0, 255)
+fps_values = []
 
 
 class Ball:
@@ -50,6 +61,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 for i in range(0, 100):
@@ -62,11 +74,23 @@ while running:
     screen.fill((0, 0, 0))
     for ball in balls:
         ball.draw()
-    fps = clock.get_fps()
-    fps_text = font.render(f"FPS: {fps:.2f}", True, (255, 255, 255))
-    screen.blit(fps_text, (10, 10))
+    fps_counter += 1
+    fps = fps_counter / (pygame.time.get_ticks() / 1000)
+    if pygame.time.get_ticks() / 1000 > num_frames_for_fps:
+        fps_counter = 0
+    fps_values.append(fps)
+    if len(fps_values) > graph_size[0]:
+        fps_values = fps_values[-graph_size[0]:]
+    for i, fps in enumerate(fps_values):
+        bar_height = fps / max_fps * graph_size[1]
+        x = graph_pos[0] + i
+        y = graph_pos[1] + graph_size[1] - bar_height
+        bar_pos = (x, y)
+        pygame.draw.rect(screen, graph_color, (bar_pos, (1, bar_height)))
+    fps_text = font.render(f"FPS: {fps:.2f}", True, fps_text_color)
+    screen.blit(fps_text, (10, 40))
     balls_text = font.render(f"Balls: {(len(balls)) :}", True, (255, 255, 255))
-    screen.blit(balls_text, (10, 40))
+    screen.blit(balls_text, (10, 10))
     pygame.display.flip()
     clock.tick(frame_rate)
 pygame.quit()
