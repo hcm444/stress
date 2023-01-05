@@ -1,12 +1,13 @@
 import pygame
 import random
 import math
+
 pygame.init()
 frame_rate = 60
 font = pygame.font.Font(None, 36)
 clock = pygame.time.Clock()
-screen_width = 800
-screen_height = 600
+screen_width = 500
+screen_height = 500
 window_size = (screen_width, screen_height)
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Stress Test')
@@ -17,7 +18,6 @@ max_fps = 60
 graph_size = (100, 50)
 graph_pos = (10, 80)
 graph_color = (255, 0, 255)
-
 fps_values = []
 running = True
 
@@ -29,7 +29,7 @@ class Ball:
         self.vx = random.uniform(-6, 6)
         self.vy = random.uniform(-6, 6)
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.radius = random.randint(2, 4)
+        self.radius = random.randint(5, 10)
 
     def update(self):
         self.vy += gravity
@@ -41,17 +41,16 @@ class Ball:
             self.vy = -self.vy
 
     def check_collision(self, other_ball):
-            dx = self.x - other_ball.x
-            dy = self.y - other_ball.y
-            distance = math.sqrt(dx ** 2 + dy ** 2)
-
-            if distance < self.radius + other_ball.radius:
-                new_self_vx = (self.vx * (self.radius - other_ball.radius) +
-                               2 * other_ball.radius * other_ball.vx) / (self.radius + other_ball.radius)
-                new_other_vx = (other_ball.vx * (other_ball.radius - self.radius) +
-                                2 * self.radius * self.vx) / (self.radius + other_ball.radius)
-                self.vx = new_self_vx
-                other_ball.vx = new_other_vx
+        dx = self.x - other_ball.x
+        dy = self.y - other_ball.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        if distance < self.radius + other_ball.radius:
+            new_self_vx = (self.vx * (self.radius - other_ball.radius) +
+                           2 * other_ball.radius * other_ball.vx) / (self.radius + other_ball.radius)
+            new_other_vx = (other_ball.vx * (other_ball.radius - self.radius) +
+                            2 * self.radius * self.vx) / (self.radius + other_ball.radius)
+            self.vx = new_self_vx
+            other_ball.vx = new_other_vx
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
