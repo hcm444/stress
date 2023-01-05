@@ -1,4 +1,3 @@
-#balls
 import pygame
 import random
 import math
@@ -27,8 +26,8 @@ class Ball:
     def __init__(self):
         self.x = random.uniform(0, screen_width)
         self.y = random.uniform(0, screen_height)
-        self.vx = random.uniform(-4, 4)
-        self.vy = random.uniform(-4, 4)
+        self.vx = random.uniform(-6, 6)
+        self.vy = random.uniform(-6, 6)
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.radius = random.randint(2, 4)
 
